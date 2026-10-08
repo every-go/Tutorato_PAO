@@ -1,0 +1,44 @@
+* {
+   margin: 0em;
+   padding: 0em;
+   line-height: 1.5em;
+}
+
+html {
+   scroll-behavior: smooth;
+}
+
+html,
+body {
+   font-size: 100%;
+   font-family: "Noto Sans", sans-serif;
+   background-color: #bbb;
+   margin-top: 1em;
+   margin-left: 0.5em;
+}
+
+header{
+   text-align: center;
+}
+
+#intro{
+   font-size: large;
+}
+
+#email{
+   margin-top: 0.5em;
+}
+
+thead, tbody, tr, td, th{
+   border: 2px solid;
+   padding: 0.5em;
+   border-color: black;
+}
+
+#name-riferimenti{
+   font-size: large;
+}
+
+#riferimenti {
+   list-style-position: inside;
+}
