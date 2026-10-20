@@ -17,26 +17,24 @@
       private:
         double a, b, c;
       public:
-        Triangle(double a_in, double b_in, double c_in): a(a_in), b(b_in), c(c_in) {}
-        double perimeter() const {
-          return a + b + c;
-        }
+        Triangle(double a_in, double b_in, double c_in);
+        void setTriangle(double x, double y, double z);
     };
     ```
   ]
-  Il parametro implicito di ogni metodo, se non indicato con _static_, è sempre l'oggetto d'invocazione.\
+  Ogni metodo possiede un parametro implicito _\*this_ che indica l'oggetto che invoca il metodo (oggetto di invocazione). Fatta eccezione per un metodo segnato con la keyword _static_.
+
   La classe è un ADT (tipo di dato astratto): definisce un dato e le operazioni che si possono fare su di esso.
 ]
 
 #slide(title: "Namespace")[
   I namespace vengono utilizzati per identificare una collezione di nomi ed identificatori appartenenti ad una stessa categoria.\
   Il più classico degli esempi è _std_.\
-  Per riferirsi ai membri di un namespace, si usa l'operatore di scoping `::`
+  Per accedere ai membri di un namespace, si usa l'operatore di scoping `::`\ \
   #align(left)[
     #show raw: set text(size: 0.6em)
     ```cpp
     #include <iostream>
-    using namespace std;
 
     std::cout << "Hello World" << std::endl;
     ```
@@ -44,9 +42,8 @@
 ]
 
 #slide(title: "Modularizzazione")[
-  Per la definizione di ogni classe, servono due file: classe.h e classe.cpp\
-  Il primo dichiara i campi, privati e pubblici, e i metodi della classe; il secondo definisce i metodi, evitando la dichiarazione _inline_.\
-  Inoltre, ogni metodo non statico possiede il puntatore implicito `this`; `*this` è l'oggetto d'invocazione.
+  Per la definizione di ogni classe, servono due file: _classe.h_ e _classe.cpp_\
+  Il primo dichiara i campi e i metodi della classe; il secondo definisce i metodi, evitando la dichiarazione _inline_.\
   #grid(
     columns: (50%, 50%),
     [
@@ -60,8 +57,9 @@
             double a, b, c;
           public:
             Triangle(double a_in, double b_in, double c_in);
-            double perimeter() const;
-            Triangle f();
+            Triangle& setA(double x);
+            Triangle& setB(double y);
+            Triangle& setC(double z);
         };
         #endif
         ```
@@ -74,13 +72,9 @@
         //costruttore
         Triangle::Triangle(double a_in, double b_in, double c_in): a(a_in), b(b_in), c(c_in) {}
 
-        double Triangle::perimeter() const {
-          return this->a + this->b + this->c;
-        }
-
-        Triangle Triangle::f(){
-          return *this;
-        }
+        Triangle& Triangle::setA(double x) { a = x; return *this; }
+        Triangle& Triangle::setB(double y) { b = y; return *this; }
+        Triangle& Triangle::setC(double z) { c = z; return *this;}
         ```
       ]
     ]
@@ -99,7 +93,84 @@
     ```cpp
     class Triangle{
       private: double a, b, c;
-      public: Triangle(double a_in = 5, double b_in = 3, double c_in = 4);
+      public: Triangle(double a_in, double b_in, double c_in = 4);
+    };
+    ```
+  ]
+]
+
+#slide()[
+  Ci sono 2 modi principali per scrivere un costruttore
+  + Senza lista d'inizializzazione
+  + Con lista d'inizializzazione
+  \ \
+  #align(left)[
+    #show raw: set text(size: 0.6em)
+    ```cpp
+    Triangle(double a_in, double b_in, double c_in) {
+      a = a_in;
+      b = b_in;
+      c = c_in;
+    }
+    ```
+  ]
+  \ \
+  #align(left)[
+    #show raw: set text(size: 0.6em)
+    ```cpp
+    Triangle(double a_in, double b_in, double c_in) : a(a_in), b(b_in), c(c_in) {}
+    ```
+  ]
+]
+
+#slide(title: "La keyword \"const\"")[
+  Serve per ottenere l'immutabilità e impedire che dati che non devono essere modificati vengano toccati per sbaglio.\
+  Può essere utilizzata in due modi:
+  + Sui metodi, quando non modificano i campi dell'oggetto d'invocazione
+  + Sui parametri
+  #align(left)[
+    #show raw: set text(size: 0.6em)
+    ```cpp
+    class Triangle{
+      private: double a, b, c;
+      public:
+        double perimeter() const { return a + b + c; }  // non modifica a, b, c
+        bool isBigger(const Triangle& t) const;         // non modifica t
+    };
+    ```
+  ]
+]
+
+#slide(title: "Passaggio per riferimento")[
+  Quando si costruisce una funzione, si può decidere se passare i parametri per valore (con copia) o per riferimento.\
+  In generale è meglio la seconda opzione poiché evita la copia e riduce il tempo di esecuzione; la copia per valore può essere inutile.
+  #align(left)[
+    #show raw: set text(size: 0.6em)
+    ```cpp
+    bool byValue(C x) {return true;}
+    bool byConstRef(const C& x) {return true;}
+    ```
+  ]
+]
+
+#slide(title: "Costruttore di copia")[
+  Casi di invocazione:
+  + Quando un oggetto viene dichiarato ed inizializzato con un altro oggetto della stessa classe
+  + Quando un oggetto viene passato per valore come parametro di una funzione
+  + Quando una funzione ritorna per valore tramite return un oggetto
+
+  Per fare la ridefinizione del costruttore di copia, si fa così:
+  #align(left)[
+    #show raw: set text(size: 0.6em)
+    ```cpp
+    class Triangle{
+      private: double a, b, c;
+      public:
+        Triangle(const Triangle& t){
+          a = t.a;
+          b = t.b;
+          c = t.c;
+        }
     };
     ```
   ]
@@ -122,6 +193,24 @@
     ```
   ]
   Se si vuole evitare la conversione implicita, si può usare la keyword `explicit` davanti al costruttore.
+]
+
+#slide(title: "Distruttore")[
+  Il distruttore viene invocato quando un oggetto deve essere cancellato dalla memoria:\
+  I motivi principali sono i seguenti:
+  + Chiusura del programma
+  + Chiusura della funzione nella quale l'oggetto era stato costruito
+  + Eliminazione dell'oggetto nel codice
+  Viene definito così:
+  #align(left)[
+    #show raw: set text(size: 0.6em)
+    ```cpp
+    class Triangle{
+      public:
+        ~Triangle();
+    };
+    ```
+  ]
 ]
 
 // --- ESERCIZIO 1: COSA STAMPA ---
@@ -163,59 +252,6 @@
   2. `Foo b(5);` invoca il costruttore ad un argomento (`x=5`), stampa `C5`.
   3. `Foo c = a;` invoca il costruttore di copia, con `x = a.x + 1` (`11`), stampa `K11`.
   4. Alla fine del `main`, gli oggetti vengono distrutti in ordine inverso di creazione: `c` (stampa `D11`), `b` (stampa `D5`), `a` (stampa `D10`).
-]
-
-#slide(title: "La keyword \"const\"")[
-  Serve per ottenere l'immutabilità e impedire che dati che non devono essere modificati vengano toccati per sbaglio.\
-  Può essere utilizzata in due modi:
-  + Sui metodi, quando non modificano i campi dell'oggetto d'invocazione
-  + Sui parametri
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private: double a, b, c;
-      public:
-        double perimeter() const { return a + b + c; }  // non modifica a, b, c
-        bool isBigger(const Triangle& t) const;         // non modifica t
-    };
-    ```
-  ]
-]
-
-#slide(title: "Passaggio per riferimento")[
-  Quando si costruisce una funzione, si può decidere se passare i parametri per valore (con copia) o per riferimento.\
-  In generale, è meglio la seconda opzione, soprattutto con `const`, poiché evita la copia e riduce il tempo di esecuzione; la copia per valore spesso è inutile.
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    bool byValue(C x) {return true;}
-    bool byConstRef(const C& x) {return true;}
-    ```
-  ]
-]
-
-#slide(title: "Costruttore di copia")[
-  Casi di invocazione:
-  + Quando un oggetto viene dichiarato ed inizializzato con un altro oggetto della stessa classe
-  + Quando un oggetto viene passato per valore come parametro di una funzione
-  + Quando una funzione ritorna per valore tramite return un oggetto
-
-  Per fare la ridefinizione del costruttore di copia, si fa così:
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private: double a, b, c;
-      public:
-        Triangle(const Triangle& t){
-          a = t.a;
-          b = t.b;
-          c = t.c;
-        }
-    };
-    ```
-  ]
 ]
 
 // --- ESERCIZIO 2: COMPLETAMENTO ---
