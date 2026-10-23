@@ -1,7 +1,13 @@
 #import "@preview/polylux:0.4.0": *
 #import "./../../unipd.typ": *
-
 #show: unipd-theme.with(palette: (..unipd-palette, font: "Noto Sans"))
+
+#show raw.where(block: true, lang: none): it => raw(it.text, lang: "cpp", block: true)
+#show raw.where(lang: "cpp"): set text(size: 0.6em)
+#let size(s, body) = {
+  show raw: set text(size: s)
+  body
+}
 
 #title-slide(
   authors: "Matteo Mazzaretto",
@@ -10,18 +16,15 @@
 )
 
 #slide(title: "Esempio di classe")[
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private:
-        double a, b, c;
-      public:
-        Triangle(double a_in, double b_in, double c_in);
-        void setTriangle(double x, double y, double z);
-    };
-    ```
-  ]
+  ```
+  class Triangle{
+    private:
+      double a, b, c;
+    public:
+      Triangle(double a_in, double b_in, double c_in);
+      void setTriangle(double x, double y, double z);
+  };
+  ```
   Ogni metodo possiede un parametro implicito _\*this_ che indica l'oggetto che invoca il metodo (oggetto di invocazione). Fatta eccezione per un metodo segnato con la keyword _static_.
 
   La classe è un ADT (tipo di dato astratto): definisce un dato e le operazioni che si possono fare su di esso.
@@ -31,14 +34,11 @@
   I namespace vengono utilizzati per identificare una collezione di nomi ed identificatori appartenenti ad una stessa categoria.\
   Il più classico degli esempi è _std_.\
   Per accedere ai membri di un namespace, si usa l'operatore di scoping `::`\ \
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    #include <iostream>
+  ```
+  #include <iostream>
 
-    std::cout << "Hello World" << std::endl;
-    ```
-  ]
+  std::cout << "Hello World" << std::endl;
+  ```
 ]
 
 #slide(title: "Modularizzazione")[
@@ -47,36 +47,30 @@
   #grid(
     columns: (50%, 50%),
     [
-      #align(left)[
-        #show raw: set text(size: 0.6em)
-        ```cpp
-        #ifndef TRIANGLE_H
-        #define TRIANGLE_H
-        class Triangle{
-          private:
-            double a, b, c;
-          public:
-            Triangle(double a_in, double b_in, double c_in);
-            Triangle& setA(double x);
-            Triangle& setB(double y);
-            Triangle& setC(double z);
-        };
-        #endif
-        ```
-      ]
+      ```
+      #ifndef TRIANGLE_H
+      #define TRIANGLE_H
+      class Triangle{
+        private:
+          double a, b, c;
+        public:
+          Triangle(double a_in, double b_in, double c_in);
+          Triangle& setA(double x);
+          Triangle& setB(double y);
+          Triangle& setC(double z);
+      };
+      #endif
+      ```
     ],
     [
-      #align(left)[
-        #show raw: set text(size: 0.6em)
-        ```cpp
-        //costruttore
-        Triangle::Triangle(double a_in, double b_in, double c_in): a(a_in), b(b_in), c(c_in) {}
+      ```
+      //costruttore
+      Triangle::Triangle(double a_in, double b_in, double c_in): a(a_in), b(b_in), c(c_in) {}
 
-        Triangle& Triangle::setA(double x) { a = x; return *this; }
-        Triangle& Triangle::setB(double y) { b = y; return *this; }
-        Triangle& Triangle::setC(double z) { c = z; return *this;}
-        ```
-      ]
+      Triangle& Triangle::setA(double x) { a = x; return *this; }
+      Triangle& Triangle::setB(double y) { b = y; return *this; }
+      Triangle& Triangle::setC(double z) { c = z; return *this;}
+      ```
     ]
   )
 ]
@@ -88,15 +82,12 @@
   + assegnare valori a seconda del numero di parametri (*overloading*)
 
   Si può considerare pure il caso dei parametri di default:
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private: double a, b, c;
-      public: Triangle(double a_in, double b_in, double c_in = 4);
-    };
-    ```
-  ]
+  ```
+  class Triangle{
+    private: double a, b, c;
+    public: Triangle(double a_in, double b_in, double c_in = 4);
+  };
+  ```
 ]
 
 #slide()[
@@ -104,23 +95,17 @@
   + Senza lista d'inizializzazione
   + Con lista d'inizializzazione
   \ \
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    Triangle(double a_in, double b_in, double c_in) {
-      a = a_in;
-      b = b_in;
-      c = c_in;
-    }
-    ```
-  ]
+  ```
+  Triangle(double a_in, double b_in, double c_in) {
+    a = a_in;
+    b = b_in;
+    c = c_in;
+  }
+  ```
   \ \
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    Triangle(double a_in, double b_in, double c_in) : a(a_in), b(b_in), c(c_in) {}
-    ```
-  ]
+  ```
+  Triangle(double a_in, double b_in, double c_in) : a(a_in), b(b_in), c(c_in) {}
+  ```
 ]
 
 #slide(title: "La keyword \"const\"")[
@@ -128,29 +113,23 @@
   Può essere utilizzata in due modi:
   + Sui metodi, quando non modificano i campi dell'oggetto d'invocazione
   + Sui parametri
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private: double a, b, c;
-      public:
-        double perimeter() const { return a + b + c; }  // non modifica a, b, c
-        bool isBigger(const Triangle& t) const;         // non modifica t
-    };
-    ```
-  ]
+  ```
+  class Triangle{
+    private: double a, b, c;
+    public:
+      double perimeter() const { return a + b + c; }  // non modifica a, b, c
+      bool isBigger(const Triangle& t) const;         // non modifica t
+  };
+  ```
 ]
 
 #slide(title: "Passaggio per riferimento")[
   Quando si costruisce una funzione, si può decidere se passare i parametri per valore (con copia) o per riferimento.\
   In generale è meglio la seconda opzione poiché evita la copia e riduce il tempo di esecuzione; la copia per valore può essere inutile.
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    bool byValue(C x) {return true;}
-    bool byConstRef(const C& x) {return true;}
-    ```
-  ]
+  ```
+  bool byValue(C x) {return true;}
+  bool byConstRef(const C& x) {return true;}
+  ```
 ]
 
 #slide(title: "Costruttore di copia")[
@@ -160,38 +139,32 @@
   + Quando una funzione ritorna per valore tramite return un oggetto
 
   Per fare la ridefinizione del costruttore di copia, si fa così:
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private: double a, b, c;
-      public:
-        Triangle(const Triangle& t){
-          a = t.a;
-          b = t.b;
-          c = t.c;
-        }
-    };
-    ```
-  ]
+  ```
+  class Triangle{
+    private: double a, b, c;
+    public:
+      Triangle(const Triangle& t){
+        a = t.a;
+        b = t.b;
+        c = t.c;
+      }
+  };
+  ```
 ]
 
 #slide(title: "Costruzione di oggetti")[
   Nel codice, si può costruire un oggetto in più modi:
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    Triangle def; //costruttore di default
+  ```
+  Triangle def; //costruttore di default
 
-    Triangle triangolo(5, 4, 7);
+  Triangle triangolo(5, 4, 7);
 
-    Triangle copia = triangolo;
+  Triangle copia = triangolo;
 
-    Triangle not_all_default(5, 4); //avrà parametro c = 4
+  Triangle not_all_default(5, 4); //avrà parametro c = 4
 
-    Triangle copia2(def);
-    ```
-  ]
+  Triangle copia2(def);
+  ```
   Se si vuole evitare la conversione implicita, si può usare la keyword `explicit` davanti al costruttore.
 ]
 
@@ -202,51 +175,40 @@
   + Chiusura della funzione nella quale l'oggetto era stato costruito
   + Eliminazione dell'oggetto nel codice
   Viene definito così:
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      public:
-        ~Triangle();
-    };
-    ```
-  ]
+  ```
+  class Triangle{
+    public:
+      ~Triangle();
+  };
+  ```
 ]
 
 // --- ESERCIZIO 1: COSA STAMPA ---
 #slide(title: "Esercizio 1: Cosa stampa?")[
-  #align(left)[
-    #show raw: set text(size: 0.75em)
-    ```cpp
-    #include <iostream>
-    using namespace std;
+  ```
+  #include <iostream>
+  using namespace std;
 
-    class Foo {
-      int x;
-    public:
-      Foo(int v = 10) : x(v) { cout << "C" << x << " "; }
-      Foo(const Foo& f) : x(f.x + 1) { cout << "K" << x << " "; }
-      ~Foo() { cout << "D" << x << " "; }
-    };
+  class Foo {
+    int x;
+  public:
+    Foo(int v = 10) : x(v) { cout << "C" << x << " "; }
+    Foo(const Foo& f) : x(f.x + 1) { cout << "K" << x << " "; }
+    ~Foo() { cout << "D" << x << " "; }
+  };
 
-    int main() {
-      Foo a;
-      Foo b(5);
-      Foo c = a;
-      return 0;
-    }
-    ```
-  ]
+  int main() {
+    Foo a;
+    Foo b(5);
+    Foo c = a;
+    return 0;
+  }
+  ```
   *Cosa stampa a schermo la funzione `main()`?*
 ]
 
 #slide(title: "Soluzione Esercizio 1")[
-  #align(left)[
-    #show raw: set text(size: 0.75em)
-    ```
-    Output: C10 C5 K11 D11 D5 D10
-    ```
-  ]
+  Output: C10 C5 K11 D11 D5 D10\
   *Spiegazione:*
   1. `Foo a;` invoca il costruttore di default (`x=10`), stampa `C10`.
   2. `Foo b(5);` invoca il costruttore ad un argomento (`x=5`), stampa `C5`.
@@ -257,41 +219,35 @@
 // --- ESERCIZIO 2: COMPLETAMENTO ---
 #slide(title: "Esercizio 2: Completamento codice")[
   Completa i campi ed i modificatori mancanti (`/* 1 */`, `/* 2 */`, `/* 3 */`) affinché il codice sia corretto e sicuro rispetto ai principi di incapsulamento e immutabilità:
-  #align(left)[
-    #show raw: set text(size: 0.75em)
-    ```cpp
-    class Counter {
-      private:
-        int val;
-      public:
-        Counter(int v = 0) : val(v) {}
-        
-        // Deve ritornare true se val è maggiore di quello di c
-        bool isGreater( /* 1 */ Counter& c ) /* 2 */;
-        
-        // Incrementa val e ritorna l'oggetto corrente per riferimento
-        Counter& increment() /* 3 */;
-    };
-    ```
-  ]
+  ```
+  class Counter {
+    private:
+      int val;
+    public:
+      Counter(int v = 0) : val(v) {}
+      
+      // Deve ritornare true se val è maggiore di quello di c
+      bool isGreater( /* 1 */ Counter& c ) /* 2 */;
+      
+      // Incrementa val e ritorna l'oggetto corrente per riferimento
+      Counter& increment() /* 3 */;
+  };
+  ```
 ]
 
 #slide(title: "Soluzione Esercizio 2")[
-  #align(left)[
-    #show raw: set text(size: 0.75em)
-    ```cpp
-    class Counter {
-      private:
-        int val;
-      public:
-        Counter(int v = 0) : val(v) {}
-        
-        /* 1 */ const
-        /* 2 */ const
-        /* 3 */ (nessuna keyword const!)
-    };
-    ```
-  ]
+  ```
+  class Counter {
+    private:
+      int val;
+    public:
+      Counter(int v = 0) : val(v) {}
+      
+      /* 1 */ const
+      /* 2 */ const
+      /* 3 */ (nessuna keyword const!)
+  };
+  ```
   *Spiegazione:*
   - `/* 1 */`: `const Counter& c` evita modifiche indesiderate all'oggetto passato per riferimento.
   - `/* 2 */`: `const` rende il metodo leggibile anche su istanze costanti di `Counter`.
@@ -300,21 +256,18 @@
 
 #slide(title: "Ridefinizione degli operatori")[
   Gli operatori di assegnazione (=, +=, -=, \*=, /=) ritornano per riferimento per permettere la concatenazione. Anche \[\] ritorna per riferimento, per poter modificare l'elemento; == invece ritorna un `bool`.
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Triangle{
-      private: double a, b, c;
-      public:
-        Triangle& operator=(const Triangle& t){
-          a = t.a;
-          b = t.b;
-          c = t.c;
-          return *this;
-        }
-    };
-    ```
-  ]
+  ```
+  class Triangle{
+    private: double a, b, c;
+    public:
+      Triangle& operator=(const Triangle& t){
+        a = t.a;
+        b = t.b;
+        c = t.c;
+        return *this;
+      }
+  };
+  ```
 ]
 
 #slide(title: "Definizioni profonde")[
@@ -329,98 +282,86 @@
 
 #slide(title: "Esempio: classe con puntatori")[
   Consideriamo la classe Instagram, che contiene una lista di Reel:
-  #align(left)[
-    #show raw: set text(size: 0.6em)
-    ```cpp
-    class Instagram{
-      private:
-        class Reel{
-          private:
-            int sec;
-          public:
-            Reel* next;
-            Reel(int s, Reel* n): sec(s), next(n) {}
-        };
-        Reel* first;
-        Reel* copy(Reel* r);
-        void destroy(Reel* r);
-      public:
-        Instagram(): first(nullptr) {}
-        Instagram(const Instagram& x);
-        Instagram& operator=(const Instagram& x);
-        ~Instagram();
-    };
-    ```
-  ]
+  ```
+  class Instagram{
+    private:
+      class Reel{
+        private:
+          int sec;
+        public:
+          Reel* next;
+          Reel(int s, Reel* n): sec(s), next(n) {}
+      };
+      Reel* first;
+      Reel* copy(Reel* r);
+      void destroy(Reel* r);
+    public:
+      Instagram(): first(nullptr) {}
+      Instagram(const Instagram& x);
+      Instagram& operator=(const Instagram& x);
+      ~Instagram();
+  };
+  ```
 ]
 
 #slide(title: "La regola del tre in azione")[
-  #show raw: set text(size: 0.65em)
-    ```cpp
-    Instagram::Reel* Instagram::copy(Reel* r){
-      if(r == nullptr) 
-        return nullptr;
-      return new Reel(r->sec, copy(r->next));
+  ```
+  Instagram::Reel* Instagram::copy(Reel* r){
+    if(r == nullptr) 
+      return nullptr;
+    return new Reel(r->sec, copy(r->next));
+  }
+
+  void Instagram::destroy(Reel* r){
+    if(r != nullptr){
+      destroy(r->next);
+      delete r;
     }
+  }
 
-    void Instagram::destroy(Reel* r){
-      if(r != nullptr){
-        destroy(r->next);
-        delete r;
-      }
+  Instagram::Instagram(const Instagram& x): first(copy(x.first)) {}
+
+  Instagram& Instagram::operator=(const Instagram& x){
+    if(this != &x){       // evita l'autoassegnazione
+      destroy(first);     // libera la vecchia memoria
+      first = copy(x.first);
     }
+    return *this;
+  }
 
-    Instagram::Instagram(const Instagram& x): first(copy(x.first)) {}
-
-    Instagram& Instagram::operator=(const Instagram& x){
-      if(this != &x){       // evita l'autoassegnazione
-        destroy(first);     // libera la vecchia memoria
-        first = copy(x.first);
-      }
-      return *this;
-    }
-
-    Instagram::~Instagram(){ destroy(first); }
-    ```
+  Instagram::~Instagram(){ destroy(first); }
+  ```
 ]
 
 // --- ESERCIZIO 3: COSA STAMPA ---
 #slide(title: "Esercizio 3: Cosa stampa?")[
-  #align(left)[
-    #show raw: set text(size: 0.7em)
-    ```cpp
-    #include <iostream>
-    using namespace std;
+  ```
+  #include <iostream>
+  using namespace std;
 
-    class Test {
-    public:
-      Test() { cout << "Def "; }
-      Test(const Test&) { cout << "Copy "; }
-      Test& operator=(const Test&) { cout << "Assign "; return *this; }
-    };
+  class Test {
+  public:
+    Test() { cout << "Def "; }
+    Test(const Test&) { cout << "Copy "; }
+    Test& operator=(const Test&) { cout << "Assign "; return *this; }
+  };
 
-    void g(Test t) {}
+  void g(Test t) {}
 
-    int main() {
-      Test t1;
-      Test t2 = t1;
-      Test t3;
-      t3 = t1;
-      g(t1);
-      return 0;
-    }
-    ```
-  ]
+  int main() {
+    Test t1;
+    Test t2 = t1;
+    Test t3;
+    t3 = t1;
+    g(t1);
+    return 0;
+  }
+  ```
   *Cosa stampa a schermo l'esecuzione del `main()`?*
 ]
 
 #slide(title: "Soluzione Esercizio 3")[
-  #align(left)[
-    #show raw: set text(size: 0.75em)
-    ```
-    Output: Def Copy Def Assign Copy
-    ```
-  ]
+  Output: Def Copy Def Assign Copy\ \
   *Spiegazione:*
   1. `Test t1;` -> `Def` (costruttore di default).
   2. `Test t2 = t1;` -> `Copy` (è un'inizializzazione, non un'assegnazione!).
