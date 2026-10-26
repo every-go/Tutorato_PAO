@@ -161,69 +161,6 @@
   Ogni oggetto ha così la *propria* scatola.
 ]
 
-#slide(title: "Cosa si consegna: header + compilato")[
-  *Il venditore* compila la sua implementazione:
-  ```sh
-  g++ -c orario.cpp      # produce orario.o (codice macchina)
-  ```
-  e consegna *solo* due file: `orario.h` e `orario.o`. Il sorgente `orario.cpp` resta a lui.\ \
-  *Il compratore* scrive `main.cpp` con `#include "orario.h"` e fa:
-  ```sh
-  g++ -c main.cpp                  # compilazione: basta l'header
-  g++ main.o orario.o -o programma # linking: serve il compilato
-  ```
-]
-
-#slide(title: "Perché servono entrambi?")[
-  - *Compilazione* (`main.cpp` → `main.o`): il compilatore legge l'header per sapere che classi e metodi esistono e come si chiamano. Non gli servono i corpi dei metodi.
-  - *Linking*: le chiamate come `t.Ore()` sono rimaste "in sospeso"; il linker le collega al codice che si trova in `orario.o`.\ \
-  L'header dice _che cosa_ esiste, il file compilato contiene _come_ funziona.
-]
-
-#slide(title: "Perché serve il puntatore")[
-  Per creare un oggetto il compilatore deve conoscerne la *dimensione*.\
-  In una classe normale deve quindi vedere tutti i campi `private`: per questo vanno nell'header.\ \
-  Con il puntatore a una classe *incompleta* la dimensione è solo quella di un puntatore: il compilatore non ha bisogno di sapere cosa c'è dentro `orario_rappr`.\ \
-  La definizione di `orario_rappr` sta solo nel `.cpp`, quindi solo in `orario.o`.
-]
-
-#slide(title: "Dal sorgente al programma")[
-  #align(center)[
-    #diagram(
-      node-stroke: 1pt,
-      node-inset: 8pt,
-      spacing: (3.2cm, 1.6cm),
-
-      // venditore
-      node((0,0), [`orario.cpp`], name: <cpp>),
-      node((0,1), [`orario.h`], fill: yellow.lighten(60%), name: <h>),
-      node((2,0), [`orario.o`], fill: yellow.lighten(60%), name: <o1>),
-
-      // compratore
-      node((0,2), [`main.cpp`], name: <main>),
-      node((2,2), [`main.o`], name: <o2>),
-
-      // risultato
-      node((4,1), [`programma`], fill: green.lighten(70%), name: <exe>),
-
-      // compilazione
-      edge(<cpp>, <o1>, "->", label: [compilazione]),
-      edge(<main>, <o2>, "->", label: [compilazione]),
-
-      // include dell'header
-      edge(<h>, <cpp>, "<--", label: [`#include`], label-side: left),
-      edge(<h>, <main>, "<--", label: [`#include`], label-side: right),
-
-      // linking
-      edge(<o1>, <exe>, "->", label: [linker], label-side: left),
-      edge(<o2>, <exe>, "->", label: [linker], label-side: right),
-    )
-  ]
-
-  In giallo i file che il venditore *consegna*. `orario.cpp` resta a lui.\
-  Le frecce tratteggiate sono gli `#include`: l'header serve al compilatore, `orario.o` serve al linker.
-]
-
 #filled-slide()[
   Array di oggetti
 ]

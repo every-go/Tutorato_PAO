@@ -192,14 +192,7 @@ int main(){
       [durata limitata al blocco in cui è dichiarata],
     )
     \
-    *2.* Il venditore consegna `orario.h` e `orario.o`. Chi usa `orario.h` e a cosa serve `orario.o`?\
-    #opts(
-      [l'header serve al linker, il `.o` al compilatore],
-      [l'header serve al compilatore, il `.o` al linker],
-      [servono entrambi solo al compilatore],
-    )
-    \
-    *3.* Nell'header si scrive `class orario_rappr;` seguita da `orario_rappr r;`. Cosa succede?\
+    *2.* Nell'header si scrive `class orario_rappr;` seguita da `orario_rappr r;`. Cosa succede?\
     #opts(
       [errore: il tipo è incompleto e il compilatore non ne conosce la dimensione],
       [compila, ma `orario_rappr` resta invisibile],
@@ -211,8 +204,7 @@ int main(){
 #slide(title: "Extra 1: soluzione")[
   #text(size: 0.85em)[
     *1 → B.* `static` a livello di file cambia solo la visibilità (linkage interno). La durata è la stessa di una globale: fino alla fine del programma.\ \
-    *2 → B.* In compilazione al compilatore basta l'header (sapere che classi e metodi esistono). Il linker collega le chiamate al codice che si trova in `orario.o`.\ \
-    *3 → A.* Per creare un oggetto serve conoscerne la dimensione, quindi la definizione completa. Con una dichiarazione incompleta si può usare solo un *puntatore* (o un riferimento): per questo l'information hiding usa `orario_rappr*`. L'errore è del compilatore, non del linker.
+    *2 → A.* Per creare un oggetto serve conoscerne la dimensione, quindi la definizione completa. Con una dichiarazione incompleta si può usare solo un *puntatore* (o un riferimento): per questo l'information hiding usa `orario_rappr*`. L'errore è del compilatore, non del linker.
   ]
 ]
 
