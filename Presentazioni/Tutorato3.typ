@@ -1,5 +1,5 @@
 #import "@preview/polylux:0.4.0": *
-#import "./../../unipd.typ": *
+#import "./../unipd.typ": *
 #show: unipd-theme.with(palette: (..unipd-palette, font: "Noto Sans"))
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
@@ -12,421 +12,431 @@
 
 #title-slide(
   authors: "Matteo Mazzaretto",
-  title: "Tutorato 2",
-  date: "27 Ottobre 2026",
+  title: "Tutorato 3",
+  date: "03 Novembre 2026",
 )
 
-#slide(title: "Distruzioni oggetti")[
+#filled-slide()[
+  Template
+]
+
+#slide(title: "Template")[
+  I template possono essere
+  + Template di funzione
+  + Template di classe
+
+  Assieme definiscono l'idea del cosiddetto _polimorfismo parametrico_.
+]
+
+
+#slide(title: "Template di funzione")[
+  Sono descrizioni di un metodo che il compilatore può usare per generare automaticamente (in maniera implicita oppure esplicita) istanze particolari di una funzione che differiscono per il tipo degli argomenti.
   #grid(
-    columns:(50%, 50%),
+    columns: (50%, 50%),
     [
-      ```
-      class C {
-        private:
-          string nome;
-        public:
-          C(const string& n) : nome(n) {
-            cout << "Costruito: " << nome << endl;
-          }
-          ~C() {
-            cout << "Distrutto: " << nome << endl;
-          }
-      };
-
-      static C ciao("ciao");
-
-      C globale("globale");
-
-      void funzione() {
-          static C statico("statico");
-          cout << "Dentro funzione()" << endl;
-      }
-
-      int main() {
-          cout << "Inizio main" << endl;
-          funzione();
-          cout << "Fine main" << endl;
-          return 0;
+      ```cp
+      template <class T>
+      T min(T a, T b) {
+        return a < b ? a : b;
       }
       ```
     ],
     [
-      Costruito: ciao\
-      Costruito: globale\
-      Inizio main\
-      Costruito: statico\
-      Dentro funzione()\
-      Fine main\
-      Distrutto: statico\
-      Distrutto: globale\
-      Distrutto: ciao\
+      ```cp
+      template <class T, int size>
+      bool min(T a) {
+        return a < size;
+      }
+      ```
+      Qui si presuppone che T possa essere confrontabile con _int_.
+    ]
+  )
+  
+  I parametri possono essere:
+  + Parametri di tipo (preceduti da _class_ o _typename_, possono essere di qualsiasi tipo)
+  + Parametri valore (tipo predefinito)
+]
+
+#slide(title: "Istanziazione")[
+  L'istanziazione può essere:
+  + Implicita
+  + Esplicita
+]
+
+#slide(title: "Istanziazione implicita")[
+  Il tipo degli elementi viene dedotto da sinistra a destra, e nel caso in cui ci siano più parametri di tipo T questi devono essere *esattamente* uguali fra di loro.\
+  Con l'esempio _min_ precedente
+  ```cpp
+  int i; double d;
+  min(i, d); //ERRORE di compilazione perché sono due tipi diversi
+  ```
+  Questo obbliga il programmatore a scegliere con cautela le istanziazioni implicite in quanto il compilatore non può sapere quale tipo veramente il programmatore voleva usare.\
+  Tuttavia sono ammesse conversioni:
+  + T& $->$ T
+  + T[] $->$ T\*
+  + T $->$ const T
+  + T $->$ const T&
+]
+
+#slide(title: "Istanziazione esplicita")[
+  Riutilizzando l'esempio precedente, per fare compilare l'uso di due diversi tipi, si può fare così:
+  ```cp
+  int i; double d;
+  min<double>(i, d); //compila, i diventa un double con la conversione int -> double
+  ```
+  Solitamente si usa per risolvere ambiguità.
+]
+
+#slide(title: "Uso di array statici")[
+  Quando si vuole usare un array statico, la dimensione costante dell'array è parte integrante del tipo del parametro, e per questo molto limitante all'uso di *qualsiasi* array statico.\
+  Per questo, quando si costruisce un template di funzione, si usa il parametro per *valore* _int size_.
+  ```cp
+  template<class T, int size>
+  T min(T (&a)[size]) {
+    ......
+  }
+
+  int main(){
+    int ia[20];
+    cout << min(ia);
+    cout << min<int,20>(ia);
+  }
+  ```
+]
+
+#filled-slide[
+  Compilazione
+]
+
+#slide(title: "Compilazione dei template")[
+  La definizione del solo template non porta ad alcun oggetto compilabile.\
+  Oltretutto, è impossibile "emulare" l'information hiding con i template, in quanto non essendo oggetti compilabili direttamente si è costretti a consegnare il template nei file header.\
+  Tuttavia, c'è un modo per limitare la compilazione di (potenzialmente) infiniti template.
+]
+
+#slide(title: "Compilazione per inclusione")[
+  #text(size: 20pt)[
+    Viene usato sia per i template di funzione che per i template di classe.\
+    Le definizioni dei template vengono messe nei file header, i quali devono essere inclusi in ogni file che usa il template.\
+    Tuttavia rimane il problema per cui se la stessa istanza di un template viene usata in più file compilati separamente il codice per tale istanza viene generato più volte dal compilatore.\
+    Si può forzare il compilatore a generare le istanze del template che vengono usate nel programma con delle _dichiarazioni esplicite di istanziazione_.
+  ]
+  ```cpp
+  template <class T>
+  T min(T a, T b) { return a < b ? a : b; }
+
+  template int min(int, int);
+  ```
+  #text(size: 20pt)[
+  La flag *-fno-implicit-templates* comunica che una dichiarazione esplicita di istanziazione compare in un altro file e che il template di funzione non deve essere istanziato.
+  ]
+]
+
+#filled-slide()[
+  Template di classe
+]
+
+#slide(title: "Come funziona")[
+  È la descrizione di un metodo che il compilatore può usare per generare automaticamente istanze particolari di una classe che differiscono per il tipo di alcuni membri, l'istanziazione è sempre *esplicita*
+  ```
+  template<class T>
+  class Queue{
+    public:
+      Queue();
+      ~Queue();
+      bool is_empty() const;
+      void add(const T&);
+      T remove();
+  };
+  ```
+  Per definire una classe Queue (coda)
+  ```cpp
+  Queue<int> qi;
+  ```
+  I parametri, sia di tipo che di valore, possono avere parametri di default.
+]
+
+#slide(title: "Queue e QueueItem")[
+  #grid(
+    columns: (50%, 50%),
+    [
+      ```cpp
+      template <class T>
+      class QueueItem;
+
+      template <class T>
+      class Queue{
+        public:
+          Queue();
+          ~Queue();
+          bool is_empty() const;
+          void add(const T&);
+          T remove();
+        private:
+          QueueItem<T>* primo;
+          QueueItem<T>* ultimo;
+      };
+      ```
+    ],
+    [
+      ```cpp
+      template <class T>
+      class QueueItem{
+        public:
+          QueueItem(const T&);
+          T info;
+          QueueItem* next;
+      };
+      ```
     ]
   )
 ]
 
-#slide(title: "Differenza fra statiche e globali")[
-  Entrambe vengono distrutte al termine del programma.\
-  La differenza è dove il loro nome viene "visto" (*linkage*).\
-  Una variabile *static* a livello di file ha linkage interno: è visibile solo nello stesso file.\
-  Una variabile *globale* ha linkage esterno: è visibile in qualsiasi altro file, basta una dichiarazione del tipo
-  #size(1.3em)[
-    ```cpp
-    extern C globale;
-    ```
-  ]
-]
-
-#filled-slide()[
-  Nascondere la parte privata di una classe
-]
-
-#slide(title: "Information hiding")[
-  Per consegnare una classe C++ bisogna dare l'*header* (`.h`), che contiene sia la parte pubblica sia quella privata: chi lo riceve vede come è fatta la classe dentro.\ \
-  E se volessimo nascondere la parte privata?\ \
-  Nell'header lasciamo solo un *puntatore* a una classe "scatola" che contiene i dati privati. La scatola viene *definita* nel `.cpp`, che consegniamo già compilato.
-]
-
-#slide(title: "Header (.h)")[
+#slide(title: "Istanziazioni di un template di classe")[
+  Nel caso in cui vengano generate più classi, ad esempio
+  - Queue\<int>
+  - Queue\<string>
+  Sono due classi completamente distinte che non possono accedere fra di loro alla parte privata della classe.
+  ```cpp
+  template<class T>
+  int f(Queue<T>& qT, Queue<string> qS);
   ```
-  class orario_handle {
+  È completamente legale.\
+  Anche in questo caso, per definire template di classe o funzione si può sfruttare una dichiarazione incompleta della classe.
+]
+
+#slide(title: "Definizione esterna")[
+  ```cpp
+
+  template<class T>
+  class Queue{
     public:
-      orario_handle(int o = 0, int m = 0, int s = 0);
-      int Ore() const;
-      int Minuti() const;
-      int Secondi() const;
-      void AvanzaUnOra();
+      Queue();
     private:
-      class orario_rappr;   // dichiarazione incompleta
-      orario_rappr* punt;
-  };
-  ```
-  Chi legge l'header sa solo che esiste una classe `orario_rappr`, *non* cosa contiene.
-]
-
-#slide(title: "Implementazione (.cpp)")[
-  ```
-  class orario_handle::orario_rappr {
-    public:
-      int sec;   // l'orario è salvato in secondi
+      QueueItem<T>* primo;
+      QueueItem<T>* ultimo;
   };
 
-  orario_handle::orario_handle(int o, int m, int s): punt(new orario_rappr()) {
-    if (...) punt->sec = 0;
-    else punt->sec = o*3600 + m*60 + s;
-  }
-
-  int orario_handle::Ore() const {
-    return punt->sec / 3600;
-  }
-
-  int orario_handle::Minuti() const {
-    return (punt->sec % 3600) / 60;
-  }
-
-  int orario_handle::Secondi() const{
-    return punt->sec % 60;
-  }
-
-  void orario_handle::AvanzaUnOra() {
-    punt->sec = (punt->sec + 3600) % 86400;
-  }
+  //definizione esterna
+  template <class T>
+  Queue<T>::Queue() : primo(0), ultimo (0) {}
   ```
-]
 
-#slide(title: "Problema: condivisione di memoria")[
-  Il puntatore è un campo dati, quindi la copia di default copia solo l'*indirizzo*: due oggetti puntano alla *stessa* scatola.\
-  Modificarne uno modifica anche l'altro, e quando uno viene distrutto l'altro punta a memoria non valida.\ \
-  Soluzione: la *regola del 3*, cioè ridefinire
-  - distruttore
-  - costruttore di copia
-  - `operator=`
-]
-
-#slide(title: "Regola del 3 applicata")[
-  ```
-  orario_handle::~orario_handle() {
-    delete punt;
-  }
-
-  orario_handle::orario_handle(const orario_handle& o)
-    : punt(new orario_rappr(*o.punt)) {}
-
-  orario_handle& orario_handle::operator=(const orario_handle& o) {
-    if (this != &o){
-      *punt = *o.punt;
-    }
-    return *this;
-  }
-  ```
-  Ogni oggetto ha così la *propria* scatola.
+  Il metodo di un template di classe non viene istanziato quando viene istanziata la classe ma se e soltanto quando il programma usa effettivamente quel metodo.
 ]
 
 #filled-slide()[
-  Array di oggetti
+  Dichiarazioni friend
 ]
 
-#slide(title: "Costruzione e distruzione")[
-  Quando si crea un array (statico o dinamico), il *costruttore di default* viene chiamato implicitamente *una volta per ogni elemento*.\
-  Se la classe non ha un costruttore di default, l'array non si può creare.\ \
-  Il *distruttore* viene chiamato per ogni elemento:
-  - array *statico*: alla fine dello scope in cui è dichiarato
-  - array *dinamico*: solo quando si scrive `delete[]`
-
-  *ATTENZIONE*: un array creato con `new[]` va distrutto con `delete[]` (non `delete`), altrimenti i distruttori non vengono chiamati.
+#slide(title: "Possibili dichiarazioni")[
+  + Dichiarazione nel template di classe C di una classe o funzione friend non template
+  + Dichiarazione nel template di classe C di  un template di classe o di un template di funzione friend associato, cioè avente tra i suoi parametri alcuni dei parametri di template C
+  + Dichiarazione nel template di classe C di un template di classe o di un template di funzione friend non associato, cioè avente i parametri disgiunti dai parametri di C
 ]
 
-#slide(title: "Esempio di cosa stampa")[
+#slide(title: "Esempio 1")[
   ```cpp
-  class C {
-    public:
-      int i;
-      C(int x = 3) : i(x) { cout << "C01 "; }
-      ~C() { cout << "D01 "; }
+  class A {
+    ...
+    int fun();
+    ...
   };
 
-  int main() {
-    C a[4];            // stampa: C01 C01 C01 C01
-    C* ad = new C[2];  // stampa: C01 C01
-    for (int j = 0; j < 4; j++)
-      cout << a[j].i;        // stampa: 3333
-    for (int j = 0; j < 2; j++)
-      cout << (ad+j)->i;     // stampa: 33
-    delete[] ad;       // stampa: D01 D01
-  }                    // fine main: a[] distrutto, stampa D01 x4
+  template<class T>
+  class C{
+    friend int A::fun();
+    friend class B;
+    friend bool test();
+  };
   ```
+  La classe B, la funzione test() e il metodo A::fun() sono friend di *tutte le istanze* del template di classe C.
 ]
 
-#filled-slide()[
-  Casting
+#slide(title: "Esempio 2")[
+  ```
+  template <class T> class A{... int fun(); ...};
+  template <class T> class B { ... };
+
+  template<class T1, class T2> class C;
+
+  template<class T1, class T2> bool test(C<T1,T2>);
+
+  template<class T1, class T2> class C{
+    friend int A<T1>::fun();
+    friend class B<T2>;
+    friend bool test<T1,T2>(C);
+  };
+  ```
+  Ad ogni istanza del template di classe C rimane associata come amica *una ed una sola* istanza del template di classe B e dei template di funzione A\<T>::fun() e test.\
+  Le dichiarazioni dei template di classe A e B e del template di funzione test devono essere visibili quando viene definito il template di classe C.\
+  Per dichiarare test è necessaria la dichiarazione (anche incompleta) di C.
 ]
 
-#slide(title: "Tipologie di cast")[
-  + Explicit cast (ereditato dal C)
-  + Static cast
-  + Const cast
-  + Reinterpret cast
-  + Dynamic cast
-]
-
-#slide(title: "Explicit cast")[
-  Viene utilizzata la notazione "( )".
+#slide(title: "Esempio 3")[
   ```cpp
-  float x = 3.5;
-  char c = 'a';
-  int a = 5;
-  void* p = &a;
+  template <class T>
+  class C{
+    T t;
+    template<class Tp>
+    friend int A<Tp>::fun();
 
-  int i = (int) x;      // i = 3
-  float y = (float) c;  // y = 97 (codice ASCII di 'a')
-  int* q = (int*) p;    // q punta allo stesso indirizzo di p
+    template <class Tp>
+    friend class B;
+
+    template<class Tp>
+    friend bool test(C<Tp>);
+  };
   ```
-  *ATTENZIONE*: il cast stile C prova in sequenza `static_cast`, `const_cast` e `reinterpret_cast`, quindi può nascondere conversioni pericolose.
+  I template di classe o di funzione dichiarati friend sono friend di ogni istanza del template di classe C.
 ]
 
-#slide(title: "Static cast")[
-  #text(size: 0.8em)[
-    Lo static cast rende *esplicite* le conversioni implicite e permette anche alcune conversioni inverse (ad esempio `double` $->$ `int`, `void*` $->$ `T*`).\
-    Si basa sul tipo statico, cioè noto a compile-time (quando si fa `g++ -c main.cpp`).\
-    Il warning per la perdita di informazione non compare, perché la conversione è stata richiesta esplicitamente.\
-    Le seguenti conversioni implicite sono senza perdite d'informazione:
-    + T& $->$ T
-    + T[] $->$ T\*
-    + T $->$ const T
-    + T\* $->$ const T\*
-    + float $->$ double $->$ long double
-    + char $->$ short $->$ int $->$ long
-    + unsigned char $->$ ... $->$ unsigned long
-  ]
-  ```
-  float x = 3.5;
-  int i = static_cast<int>(x);   // i = 3
-  ```
-]
-
-#slide(title: "Const cast")[
-  Permette di rimuovere il "const" da un *puntatore o riferimento*.\
-  Non andrebbe usato quasi mai, perché viola il principio di "constness".\
-  Se l'oggetto originale è *dichiarato* `const`, modificarlo è comportamento indefinito.
-  #size(1.5em)[
-    ```cpp
-    int y = 3;
-    const int& r = y;
-    r = 5;                    // errore
-    const_cast<int&>(r) = 5;  // compila
-    ```
-  ]
-]
-
-#slide(title: "Reinterpret cast")[
-  Il più pericoloso dei cast: reinterpreta la sequenza di bit come se fosse di un altro tipo, senza nessuna conversione.\
-  Va usato solo con estrema cautela.\
-  Il risultato dipende dall'architettura.
-  #size(1.2em)[
-    ```cpp
-    double d = 3.14;
-    int* i = reinterpret_cast<int*>(&d);
-    cout << *i; // legge i primi 4 byte di d come int
-    ```
-  ]
-]
-
-#slide(title: "Dynamic cast")[
-  A differenza dello `static_cast`, il controllo avviene a *run-time*.\
-  Si usa con puntatori o riferimenti a classi in una gerarchia di ereditarietà (argomento che verrà coperto in futuro).\
-  Se la conversione non è valida, restituisce `nullptr` (per i puntatori).
-]
-
-#filled-slide()[
-  Friend
-]
-
-#slide(title: "Funzioni amiche")[
-  Una funzione esterna alla classe può usare solo l'interfaccia *pubblica*.\
-  Nell'esempio di bolletta, `operator<<` riceve la bolletta *per valore* (una copia) e la "svuota" con `Estrai_Una`:
-  ```
-  ostream& operator<<(ostream& os, bolletta b) {
-    int i = 1;
-    while (!b.Vuota()) {
-      os << i << ") " << b.Estrai_Una() << endl;
-      i++;
-    }
-    return os;
-  }
-  ```
-]
-
-#slide(title: "Dichiarare la funzione friend")[
-  Dichiarando la funzione `friend` dentro la classe, può accedere alla parte privata e lavorare direttamente sull'oggetto, senza copie.
-  ```
-  class bolletta {
-    ......
-    friend ostream& operator<<(ostream&, const bolletta&);
+#slide(title: "Membri statici")[
+  Se un template di classe contiene un membro statico, ne viene creato uno nuovo per ogni nuova istanza della classe.
+  ```cpp
+  template<int I>
+  class C{
+    static int numero;
+    public:
+      C();
   };
 
-  ostream& operator<<(ostream& os, const bolletta& b) {
-    bolletta::nodo* p = b.first;
-    int i = 1;
-    while (p) {
-      os << i << ") " << p->info << endl;
-      i++;
-      p = p->next;
-    }
-    return os;
+  template<int I>
+  int C<I>::numero = I;
+
+  template<int I>
+  C<I>::C() { numero ++; }
+
+  int main(){
+    C<1> uno; C<2> due_a; C<2> due_b;
   }
   ```
 ]
 
 #filled-slide()[
-  Iteratori
+  Typename
 ]
 
-#slide(title: "Iteratori applicati a Instagram")[
-  Per scorrere la lista di `Reel` senza mostrare i nodi all'esterno, aggiungiamo a `Instagram` una classe annidata *iteratore*, che incapsula un puntatore a `Reel`.\ \
-  L'utente usa `begin()`, `end()`, `++` e `[]` come se fossero indici, senza sapere che dietro c'è una lista.
-]
+#slide(title: "Typename")[
+  La parola chiave _typename_ ha due usi:
+  + Come *alternativa a _class_* nella lista dei parametri di tipo
+  + Per indicare che un *nome dipendente* è un tipo
 
-#slide(title: "Classe Instagram con iteratore")[
-  #size(0.75em)[
-    ```cpp
-    class Instagram {
-      private:
-        class Reel {
-          public:
-            int sec;
-            Reel* next;
-            Reel(int s, Reel* n) : sec(s), next(n) {}
-        };
-        Reel* first;
-      public:
-        class iteratore {
-          friend class Instagram;
-          private:
-            Reel* punt;
-          public:
-            iteratore() : punt(nullptr) {}
-            bool operator==(iteratore i) const {
-              return punt == i.punt;
-            }
-            bool operator!=(iteratore i) const {
-              return punt != i.punt;
-            }
-            iteratore& operator++() {     // prefisso
-              if (punt) punt = punt->next;
-              return *this;
-            }
-            iteratore operator++(int) {   // postfisso (int solo per distinguerlo)
-              iteratore aux = *this;
-              if (punt) punt = punt->next;
-              return aux;
-            }
-        };
-    ```
-  ]
-]
+  ```cpp
+  template <class T>
+  T min(T a, T b);
 
-#slide(title: "Instagram: begin, end e operator[]")[
+  template <typename T>
+  T min(T a, T b);
   ```
-      Instagram() : first(nullptr) {}
-
-      void aggiungi_in_testa(int s) {
-        first = new Reel(s, first);
-      }
-
-      iteratore begin() const {
-        iteratore aux;
-        aux.punt = first;
-        return aux;
-      }
-
-      iteratore end() const {
-        iteratore aux;
-        aux.punt = nullptr;   // "oltre l'ultimo"
-        return aux;
-      }
-
-      int& operator[](iteratore it) const {
-        return it.punt->sec;
-      }
-
-      bool operator==(const Instagram& x) const;
-      bool operator!=(const Instagram& x) const;
-  };
-  ```
-  `end()` non punta a un `Reel` valido: indica che la lista è finita.
 ]
 
-#slide(title: "Instagram: == e != con gli iteratori")[
-  Due `Instagram` sono uguali se hanno gli stessi `sec`, nello stesso ordine. Scorriamo le due liste insieme con gli iteratori:
-  ```
-  bool Instagram::operator==(const Instagram& x) const {
-    iteratore i = begin();
-    iteratore j = x.begin();
-    while (i != end() && j != x.end()) {
-      if ((*this)[i] != x[j])
-        return false;
-      ++i;
-      ++j;
-    }
-    return i == end() && j == x.end();
-  }
-
-  bool Instagram::operator!=(const Instagram& x) const {
-    return !(*this == x);
+#slide(title: "Nomi dipendenti")[
+  Dentro un template, un nome qualificato che dipende da un parametro (come `T::x`) non è risolvibile finché T non è noto.\
+  Per default il compilatore assume che sia un *valore* (es. un membro statico), non un tipo.
+  ```cpp
+  template <class T>
+  void f() {
+    T::x * p;
+    // dichiarazione di un puntatore p a T::x
+    // oppure moltiplicazione tra T::x e p?
   }
   ```
-  Alla fine del ciclo le liste sono uguali solo se *entrambe* sono terminate: se una è più lunga, sono diverse.
+  Il compilatore sceglie la moltiplicazione. Per dire che `T::x` è un tipo si scrive
+  ```cpp
+  typename T::x * p;
+  ```
 ]
 
-#slide(title: "Uso: somma delle durate")[
-  ```
-  int Somma_Durate(const Instagram& x) {
-    int durata = 0;
-    for (Instagram::iteratore it = x.begin(); it != x.end(); ++it) {
-      durata += x[it];
-    }
-    return durata;
+#slide(title: "Quando è obbligatorio")[
+  È necessario davanti a un nome *qualificato* e *dipendente* da un parametro di template che denota un tipo.
+  ```cpp
+  template <class T>
+  void stampa(const T& c) {
+    typename T::const_iterator it = c.begin();
+    for (; it != c.end(); ++it)
+      cout << *it << endl;
   }
   ```
-  Chi usa `Instagram` non vede né `Reel` né i puntatori: sa solo scorrere con l'iteratore.\
-  Nel `for` conviene `++it` (prefisso): il postfisso crea una copia in più che non serve.
+  Non si usa:
+  - Per nomi non dipendenti (es. `std::string`)
+  - Nella lista delle classi base e negli inizializzatori del costruttore
+]
+
+#filled-slide()[
+  Contenitori STL
+]
+
+#slide(title: "Standard Template Library")[
+  È una libreria di contenitori.\
+  Ogni funzione indica la complessità massima con la quale deve essere presente.\
+  STL ha contenitori, iteratori, algoritmi.\
+  Chiaramente sono ridefiniti tutti gli operatori importanti (la regola del 3) e gli operatori di confronto (<, $<=$ ecc).
+]
+
+#slide(title: "Vector")[
+  Restituisce array dinamico con capacity()$>=$size().\
+  È il più semplice contenitore e per la maggioranza delle applicazioni è il più efficiente.
+  + Supporto accesso casuale O(1)
+  + Inserimento e rimozione in coda a tempo costante ammortizzato
+  + Inserimento e rimozione in coda a tempo lineare ammortizzato
+  + La capacità può variare dinamicamente (potenza di 2)
+  + La gestione della memoria è automaticamente
+  La capacità raddoppia ogni volta che c'è bisogno di una cella oltre capacity().
+]
+
+#slide(title: "Template vector")[
+  Template a 2 parametri:
+  ```cpp
+  template <class T, class Alloc = allocator<T>> class vector;
+  ```
+  Il primo è il tipo degli elementi, il secondo l'allocatore (quasi sempre quello di default).\
+  Size iniziale e valore di default si passano al *costruttore*:
+  ```cpp
+  vector<int> v;         // vuoto
+  vector<int> v(10);     // 10 elementi, tutti 0
+  vector<int> v(10, 7);  // 10 elementi, tutti 7
+  ```
+]
+
+#slide(title: "Metodi fondamentali")[
+  ```cpp
+  void push_back(const T&); //aggiungi in coda
+  void pop_back(); //rimuovi in coda
+  T& front();
+  T& back();
+  iterator begin();
+  iterator end();
+  bool empty(); //comune a tutti i contenitori
+  int size(); //comune a tutti i contenitori
+  ```
+  Ad ogni classe contenitore si ha
+  - C::iterator
+  - C::const\_iterator
+]
+
+#slide(title: "Iteratori")[
+  Un iteratore si comporta come un puntatore: `*it` accede all'elemento, `++it` passa al successivo.
+  ```cpp
+  vector<int> v;
+  v.push_back(1); v.push_back(2);
+
+  for (vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+    cout << *it << endl;
+  ```
+  Dentro un template serve `typename`:
+  ```cpp
+  template <class T>
+  void stampa(const vector<T>& v) {
+    typename vector<T>::const_iterator it = v.begin();
+    ...
+  }
+  ```
+]
+
+#slide(title: "Altri contenitori")[
+  Esistono altri contenitori come:
+  - list (lista doppiamente linkata)
+  - deque (coda con accessi sia dal "fronte" che dal "retro")
+  -
 ]

@@ -1,5 +1,5 @@
 #import "@preview/polylux:0.4.0": *
-#import "./../../unipd.typ": *
+#import "./../unipd.typ": *
 #show: unipd-theme.with(palette: (..unipd-palette, font: "Noto Sans"))
 
 #show raw.where(block: true, lang: none): it => raw(it.text, lang: "cpp", block: true)

@@ -1,11 +1,11 @@
 #import "@preview/polylux:0.4.0": *
-#import "./../../unipd.typ": *
+#import "./../unipd.typ": *
 #show: unipd-theme.with(palette: (..unipd-palette, font: "Noto Sans"))
 
 #title-slide(
   authors: "Matteo Mazzaretto",
-  title: "Tutorato 2 - Esercizi Extra",
-  date: "27 Ottobre 2026",
+  title: "Tutorato 3 - Esercizi Extra",
+  date: "03 Novembre 2026",
 )
 
 // Blocco di codice allineato a sinistra e con dimensione ridotta
@@ -24,254 +24,243 @@
 // ---------- Codice degli esercizi ----------
 
 #let x2 = ```cpp
-class T{
-  public:
-    int id;
-    T(int x = 7): id(x){ cout << "C" << id << " "; }
-    ~T(){ cout << "D" << id << " "; }
-};
+template <class T>
+T minimo(T a, T b){ return a < b ? a : b; }
+
+template <class T, int size>
+int dim(T (&a)[size]){ return size; }
 
 int main(){
-  T a[2];
-  T* p = new T[3];
-  for(int j = 0; j < 3; j++) p[j].id = j;
-  delete[] p;
-  cout << "fine ";
+  int i = 3; double d = 2.5;
+  int ia[7]; char ca[4];
+
+  cout << minimo(i, 8) << " ";
+  cout << minimo<double>(i, d) << " ";
+  cout << minimo<int>(d, i) << " ";
+  cout << dim(ia) + dim(ca);
 }
 ```
 
 #let x4 = ```cpp
-class C{
-  private: string nome;
+template <class T>
+class Cont{
   public:
-    C(const string& n): nome(n){ cout << "+" << nome << " "; }
-    ~C(){ cout << "-" << nome << " "; }
+    static int n;
+    Cont(){ n++; }
+    ~Cont(){ n--; }
 };
 
-C g("g");
-
-void f(int k){
-  static C s("s");
-  C l("l");
-  cout << k << " ";
-}
+template <class T>
+int Cont<T>::n = 0;
 
 int main(){
-  cout << "start ";
-  f(1);
-  f(2);
-  static C m("m");
-  cout << "end ";
-}
-```
-
-#let x5 = ```cpp
-int main(){
-  double d = 7.9;
-  int i = static_cast<int>(d);
-  cout << i << " ";
-
-  int y = 3;
-  const int& r = y;
-  const_cast<int&>(r) = 10;
-  cout << y << " " << r << " ";
-
-  cout << static_cast<double>(7 / 2) << " ";
-  cout << static_cast<double>(7) / 2;
+  Cont<int> a, b;
+  Cont<char> c;
+  {
+    Cont<int> d;
+    cout << Cont<int>::n << " ";
+  }
+  cout << Cont<int>::n << " " << Cont<char>::n << " ";
+  Cont<double> e;
+  cout << Cont<double>::n;
 }
 ```
 
 #let x6 = ```cpp
-class Playlist{
-  friend /* 1 */ operator<<(/* 2 */ os, /* 3 */ p);
-  private:
-    class Brano{
-      public:
-        int dur;
-        Brano* next;
-        Brano(int d, Brano* n): dur(d), next(n) {}
-    };
-    Brano* first;
+template <class T, int N = 2>
+class Buf{
   public:
-    Playlist(): first(nullptr) {}
-    void add(int d){ first = new Brano(d, first); }
+    T v[N];
+    Buf(){ cout << "B" << N << " "; }
+    ~Buf(){ cout << "~B" << N << " "; }
+    int size() const { return N; }
 };
 
-/* 1 */ operator<<(/* 2 */ os, /* 3 */ p){
-  Playlist::Brano* q = /* 4 */;
-  while(q){
-    os << q->dur << " ";
-    q = /* 5 */;
-  }
-  return os;
-}
-
 int main(){
-  Playlist p;
-  p.add(3); p.add(5); p.add(8);
-  cout << p;
+  Buf<int> a;
+  Buf<char, 3> b;
+  Buf<int, 2> c;
+  cout << a.size() + b.size() + c.size() << " ";
 }
 ```
 
 #let x8 = ```cpp
 int main(){
-  Instagram x;
-  x.aggiungi_in_testa(10);
-  x.aggiungi_in_testa(20);
-  x.aggiungi_in_testa(30);
+  vector<int> v(3, 4);
+  v.push_back(9);
+  v.push_back(1);
+  v.pop_back();
+  cout << v.size() << " " << (v.capacity() >= v.size()) << " ";
+  cout << v.front() << " " << v.back() << " ";
 
-  Instagram::iteratore it = x.begin();
-  cout << x[it++] << " ";
-  cout << x[it] << " ";
-  cout << x[++it] << " ";
+  vector<int>::iterator it = v.begin();
   ++it;
-  cout << (it == x.end()) << " ";
-  cout << (++it == x.end());
-}
-```
-
-#let x9 = ```cpp
-// dentro la classe iteratore
-iteratore& operator++(){
-  if(/* 1 */) punt = punt->next;
-  return /* 2 */;
-}
-
-iteratore operator++(int){
-  /* 3 */ aux = *this;
-  ++(*this);
-  return /* 4 */;
-}
-
-// fuori dalla classe: quanti Reel durano piu' di k secondi?
-int Conta_Lunghi(const Instagram& x, int k){
-  int n = 0;
-  for(Instagram::iteratore it = /* 5 */; it != /* 6 */; ++it)
-    if(x[it] > k) n++;
-  return n;
+  *it = 7;
+  int s = 0;
+  for(it = v.begin(); it != v.end(); ++it) s += *it;
+  cout << s;
 }
 ```
 
 #let x10 = ```cpp
-class C{
-  public:
-    char id;
-    C(char i = 'x'): id(i){ cout << "+" << id << " "; }
-    ~C(){ cout << "-" << id << " "; }
-};
-
-C g('G');
-
-C* make(){
-  C* p = new C[2];
-  p[0].id = 'P';
-  p[1].id = 'Q';
-  return p;
+template <class C>
+int somma_pari(const C& c){
+  int s = 0;
+  for(typename C::const_iterator it = c.begin(); it != c.end(); ++it)
+    if(*it % 2 == 0) s += *it;
+  return s;
 }
 
 int main(){
-  C a[2] = { C('A'), C('B') };
-  C* p = make();
-  {
-    C b('b');
-    delete[] p;
-  }
-  cout << "fine ";
+  vector<int> v;
+  for(int i = 1; i <= 6; i++) v.push_back(i * i);
+
+  list<int> l;
+  l.push_back(3); l.push_front(8);
+  l.push_back(10); l.push_front(5);
+
+  cout << somma_pari(v) << " " << somma_pari(l) << " ";
+  cout << l.front() << " " << l.back();
 }
 ```
 
+#let x3 = ```cpp
+int main(){
+  int ia[5] = {3, 8, 1, 8, 5};
+  char ca[3] = {'x', 'y', 'z'};
+  cout << cerca(ia, 8) << " ";
+  cout << cerca(ca, 'q') << " ";
+  cout << cerca(ca, 'z');
+}
+// output: 1 -1 2
+```
+
+#let x7 = ```cpp
+template <class T> class QueueItem;
+
+template <class T>
+class Queue{
+  public:
+    Queue(): primo(0), ultimo(0) {}
+    bool is_empty() const { return primo == 0; }
+    void add(const T&);  // inserisce in coda
+    T remove();          // rimuove dalla testa e restituisce l'elemento
+  private:
+    QueueItem<T>* primo;
+    QueueItem<T>* ultimo;
+};
+
+template <class T>
+class QueueItem{
+  public:
+    QueueItem(const T& t): info(t), next(0) {}
+    T info;
+    QueueItem* next;
+};
+```
+
+#let x11 = ```cpp
+int main(){
+  vector<int> v;
+  v.push_back(4); v.push_back(7); v.push_back(4);
+  list<char> l;
+  l.push_back('a'); l.push_back('b');
+
+  cout << conta(v, 4) << " ";
+  cout << conta(l, 'z');
+}
+// output: 2 0
+```
+
 // =====================================================
-// EXTRA 1: crocette (static/globali, header e linker)
+// EXTRA 1: crocette (template di funzione)
 // =====================================================
 #slide(title: "Extra 1: crocette")[
   #text(size: 0.8em)[
-    *1.* Una variabile `static C ciao;` dichiarata a livello di file ha:\
+    *1.* Dato `template <class T> T minimo(T a, T b)`, cosa succede con la chiamata `minimo(3, 4.5)`?\
     #opts(
-      [linkage esterno: è visibile in tutti i file],
-      [linkage interno: il nome è visibile solo in questo file],
-      [durata limitata al blocco in cui è dichiarata],
+      [compila, `T` viene dedotto come `double`],
+      [errore di compilazione: `T` verrebbe dedotto sia `int` sia `double`],
+      [compila, `T` è `int` e il valore `4.5` viene troncato],
     )
     \
-    *2.* Nell'header si scrive `class orario_rappr;` seguita da `orario_rappr r;`. Cosa succede?\
+    *2.* Perché la definizione di un template di funzione si mette nel file header?\
     #opts(
-      [errore: il tipo è incompleto e il compilatore non ne conosce la dimensione],
-      [compila, ma `orario_rappr` resta invisibile],
-      [errore solo al momento del linking],
+      [perché il compilatore deve vedere la definizione per generare l'istanza dove il template viene usato],
+      [perché i template di funzione sono sempre `inline` per standard],
+      [perché nei file `.cpp` i template non possono avere parametri di tipo],
     )
   ]
 ]
 
 #slide(title: "Extra 1: soluzione")[
   #text(size: 0.85em)[
-    *1 → B.* `static` a livello di file cambia solo la visibilità (linkage interno). La durata è la stessa di una globale: fino alla fine del programma.\ \
-    *2 → A.* Per creare un oggetto serve conoscerne la dimensione, quindi la definizione completa. Con una dichiarazione incompleta si può usare solo un *puntatore* (o un riferimento): per questo l'information hiding usa `orario_rappr*`. L'errore è del compilatore, non del linker.
+    *1 → B.* Nella deduzione implicita i parametri dello stesso tipo `T` devono essere *esattamente* uguali e non si applicano conversioni come `int` $->$ `double`. Si risolve con l'istanziazione esplicita: `minimo<double>(3, 4.5)`.\ \
+    *2 → A.* La sola definizione del template non produce codice: l'istanza viene generata quando il template è usato, e per farlo il compilatore deve vedere la definizione. Per questo non si può fare information hiding con i template.
   ]
 ]
 
 // =====================================================
-// EXTRA 2: cosa stampa (array di oggetti)
+// EXTRA 2: cosa stampa (template di funzione)
 // =====================================================
 #slide(title: "Extra 2: cosa stampa?")[
-  #code(x2, size: 0.85em)
+  #code(x2, size: 0.8em)
 ]
 
 #slide(title: "Extra 2: soluzione")[
   #grid(
-    columns: (46%, 50%),
+    columns: (40%, 60%),
     column-gutter: 4%,
     [
       *Output:*
       ```text
-      C7 C7 C7 C7 C7 D2 D1 D0 fine D7 D7
+      3 2.5 2 11
       ```
     ],
     [
-      - Il costruttore di default (`x = 7`) viene chiamato per ogni elemento: 2 volte per `a`, 3 per `p`
-      - Poi gli `id` di `p` diventano 0, 1, 2
-      - `delete[] p` distrugge gli elementi in ordine *inverso*: `D2 D1 D0`
-      - L'array statico `a` viene distrutto alla fine del `main`, dopo `fine`: `D7 D7`
+      - `minimo(i, 8)`: `T` viene dedotto `int` da entrambi gli argomenti, il minimo è `3`
+      - `minimo<double>(i, d)`: istanziazione esplicita, `i` diventa `3.0`; il minimo è `2.5`
+      - `minimo<int>(d, i)`: questa volta è `d` a essere convertito in `int`, diventa `2`; il minimo è `2`
+      - `dim(ia)` e `dim(ca)`: il parametro valore `size` viene dedotto dalla dimensione dell'array, quindi `7 + 4 = 11`
     ],
   )
 ]
 
 // =====================================================
-// EXTRA 3: crocette (cast)
+// EXTRA 3: scrivi la funzione (template di funzione)
 // =====================================================
-#slide(title: "Extra 3: crocette")[
-  #text(size: 0.8em)[
-    *1.* Quale cast controlla la validità della conversione a *run-time*?\
-    #opts(
-      [`static_cast`],
-      [`reinterpret_cast`],
-      [`dynamic_cast`],
-    )
-    \
-    *2.* `const int x = 3;` poi `const_cast<int&>(x) = 5;`. Cosa succede?\
-    #opts(
-      [errore di compilazione],
-      [compila e il comportamento è indefinito, perché `x` è dichiarata `const`],
-      [compila e `x` vale sicuramente 5],
-    )
-    \
-    *3.* Un cast stile C, ad esempio `(int*) p`, cosa può fare?\
-    #opts(
-      [solo un `static_cast`],
-      [prova `static_cast`, `const_cast` e `reinterpret_cast` in sequenza, anche nascondendo conversioni pericolose],
-      [solo un `dynamic_cast`],
-    )
-  ]
+#slide(title: "Extra 3: scrivi la funzione")[
+  Scrivi il template di funzione `cerca` che, dati un array statico (di qualsiasi tipo e dimensione) e un valore, restituisce l'indice della prima occorrenza del valore, oppure `-1` se non è presente. La dimensione dell'array *non* va passata come parametro.
+  #code(x3, size: 0.85em)
 ]
 
 #slide(title: "Extra 3: soluzione")[
-  #text(size: 0.85em)[
-    *1 → C.* `static_cast` e `reinterpret_cast` si basano sul tipo statico (compile-time). Solo `dynamic_cast` controlla a run-time e restituisce `nullptr` se non è valido (per i puntatori).\ \
-    *2 → B.* Il cast compila, ma modificare un oggetto *dichiarato* `const` è comportamento indefinito. Il caso lecito è quando l'oggetto originale non è `const` e lo si raggiunge tramite un riferimento o puntatore `const`.\ \
-    *3 → B.* Per questo i cast stile C sono sconsigliati: non si vede quale conversione viene davvero applicata.
-  ]
+  #grid(
+    columns: (50%, 46%),
+    column-gutter: 4%,
+    [
+      #code(size: 0.85em)[
+        ```cpp
+        template <class T, int size>
+        int cerca(const T (&a)[size], const T& x){
+          for(int i = 0; i < size; i++)
+            if(a[i] == x) return i;
+          return -1;
+        }
+        ```
+      ]
+    ],
+    [
+      - `size` è un parametro valore, dedotto dalla dimensione dell'array
+      - L'array va passato per *riferimento*: per valore decadrebbe in puntatore e la dimensione andrebbe persa
+      - `const T (&a)[size]` perché l'array non viene modificato
+      - Serve che `T` abbia `operator==`
+    ],
+  )
 ]
 
 // =====================================================
-// EXTRA 4: cosa stampa (globali e statiche)
+// EXTRA 4: cosa stampa (membri statici)
 // =====================================================
 #slide(title: "Extra 4: cosa stampa?")[
   #code(x4, size: 0.8em)
@@ -284,50 +273,52 @@ int main(){
     [
       *Output:*
       ```text
-      +g start +s +l 1 -l +l 2 -l +m end -m -s -g
+      3 2 1 1
       ```
     ],
     [
-      - `g` è globale: costruita prima di `main`
-      - `s` è static locale: costruita alla *prima* chiamata di `f` e mai più
-      - `l` è locale: costruita e distrutta a *ogni* chiamata (`+l 1 -l`, `+l 2 -l`)
-      - `m` è static locale di `main`: costruita quando l'esecuzione arriva a quella riga
-      - Alla fine le durate statiche si distruggono in ordine inverso di costruzione: `m`, `s`, `g`
+      - Un membro statico di un template di classe esiste *per ogni istanza*: `Cont<int>::n`, `Cont<char>::n` e `Cont<double>::n` sono tre variabili distinte
+      - `a` e `b` portano `Cont<int>::n` a 2; `c` porta `Cont<char>::n` a 1
+      - `d` nel blocco: `Cont<int>::n` vale 3, e viene stampato `3`
+      - All'uscita dal blocco `d` viene distrutto: `Cont<int>::n` torna a 2, mentre `Cont<char>::n` vale ancora 1
+      - `e` è la prima istanza di `Cont<double>`: il suo contatore parte da 0 e arriva a 1
     ],
   )
 ]
 
 // =====================================================
-// EXTRA 5: cosa stampa (cast)
+// EXTRA 5: crocette (template di classe)
 // =====================================================
-#slide(title: "Extra 5: cosa stampa?")[
-  #code(x5, size: 0.85em)
+#slide(title: "Extra 5: crocette")[
+  #text(size: 0.8em)[
+    *1.* `Queue<int>` e `Queue<string>` sono due istanze dello stesso template di classe. Come sono tra loro?\
+    #opts(
+      [la stessa classe, con membri di tipo diverso],
+      [due classi distinte, che non possono accedere l'una alla parte privata dell'altra],
+      [due classi distinte, ma amiche tra loro per default],
+    )
+    \
+    *2.* Quando viene istanziato un metodo di un template di classe?\
+    #opts(
+      [insieme alla classe, tutti i metodi contemporaneamente],
+      [solo se e quando il programma usa effettivamente quel metodo],
+      [all'avvio del programma, a run-time],
+    )
+  ]
 ]
 
 #slide(title: "Extra 5: soluzione")[
-  #grid(
-    columns: (46%, 50%),
-    column-gutter: 4%,
-    [
-      *Output:*
-      ```text
-      7 10 10 3 3.5
-      ```
-    ],
-    [
-      - `static_cast<int>(7.9)` tronca: `i = 7`
-      - `r` è un riferimento a `y` (che non è `const`): `const_cast<int&>(r) = 10` modifica `y`, quindi `y` e `r` valgono 10
-      - `7 / 2` è una divisione tra interi (3) e il cast viene dopo: `3`
-      - `static_cast<double>(7) / 2` divide in virgola mobile: `3.5`
-    ],
-  )
+  #text(size: 0.85em)[
+    *1 → B.* Ogni istanza è una classe completamente distinta: per vedere la parte privata di un'altra istanza servirebbe una dichiarazione `friend` esplicita.\ \
+    *2 → B.* Istanziare la classe non istanzia i suoi metodi: ognuno viene generato solo se il programma lo usa. Tutto avviene a compile-time.
+  ]
 ]
 
 // =====================================================
-// EXTRA 6: completamento (friend)
+// EXTRA 6: cosa stampa (parametri di default)
 // =====================================================
-#slide(title: "Extra 6: completa")[
-  #code(x6, size: 0.6em)
+#slide(title: "Extra 6: cosa stampa?")[
+  #code(x6, size: 0.85em)
 ]
 
 #slide(title: "Extra 6: soluzione")[
@@ -335,128 +326,134 @@ int main(){
     columns: (46%, 50%),
     column-gutter: 4%,
     [
-      ```cpp
-      /* 1 */ ostream&
-      /* 2 */ ostream&
-      /* 3 */ const Playlist&
-      /* 4 */ p.first
-      /* 5 */ q->next
-      ```
       *Output:*
       ```text
-      8 5 3
+      B2 B3 B2 7 ~B2 ~B3 ~B2
       ```
     ],
     [
-      - Il tipo di ritorno e il primo parametro sono `ostream&`, per poter concatenare `cout << a << b`
-      - `const Playlist&` evita la copia e garantisce di non modificare la playlist
-      - Grazie a `friend` la funzione legge `p.first` e usa anche il tipo privato `Playlist::Brano`
-      - L'inserimento è in testa, quindi si stampa 8 5 3
+      - `Buf<int>` usa il valore di default `N = 2`: stampa `B2`
+      - `Buf<char, 3>` stampa `B3`
+      - `Buf<int>` e `Buf<int, 2>` sono la *stessa* istanza del template
+      - `2 + 3 + 2 = 7`
+      - Alla fine del `main` gli oggetti si distruggono in ordine inverso: `c`, `b`, `a`, cioè `~B2 ~B3 ~B2`
     ],
   )
 ]
 
 // =====================================================
-// EXTRA 7: crocette (iteratori, delete[], friend)
+// EXTRA 7: scrivi i metodi (template di classe)
 // =====================================================
-#slide(title: "Extra 7: crocette")[
+#slide(title: "Extra 7: scrivi i metodi")[
   #text(size: 0.8em)[
-    *1.* Perché `end()` restituisce un iteratore con `punt == nullptr`?\
-    #opts(
-      [perché punta all'ultimo nodo della lista],
-      [perché indica la posizione "oltre l'ultimo", che non è un elemento valido],
-      [perché è l'unico valore che `punt` può avere nella classe],
-    )
-    \
-    *2.* Si scrive `C* p = new C[3];` e poi `delete p;`. Cosa succede?\
-    #opts(
-      [comportamento indefinito: tipicamente non vengono chiamati tutti i distruttori],
-      [viene chiamato il distruttore su tutti e 3 gli elementi],
-      [errore di compilazione],
-    )
-    \
-    *3.* Una funzione dichiarata `friend` di una classe:\
-    #opts(
-      [è un metodo della classe, con il puntatore `this`],
-      [non è un metodo, ma può accedere ai membri privati],
-      [può accedere ai membri privati solo degli oggetti `const`],
-    )
+    Scrivi le definizioni *esterne* di `Queue<T>::add` e `Queue<T>::remove`. Puoi assumere che `remove` venga chiamata solo su una coda non vuota, e ignora il distruttore.
   ]
+  #code(x7, size: 0.65em)
 ]
 
 #slide(title: "Extra 7: soluzione")[
-  #text(size: 0.85em)[
-    *1 → B.* L'iteratore `end()` non punta a un `Reel` valido: serve come segnale di fine, e `++` sull'ultimo elemento ci arriva portando `punt` a `nullptr`. Usare `x[end()]` è un errore.\ \
-    *2 → A.* Un array creato con `new[]` si libera con `delete[]`. Con `delete` semplice il comportamento è indefinito (tipicamente si distrugge solo un elemento).\ \
-    *3 → B.* Una funzione `friend` è una funzione esterna: non ha `this`, deve ricevere l'oggetto come parametro, ma può leggere e scrivere i membri privati, `const` o no.
-  ]
+  #grid(
+    columns: (54%, 42%),
+    column-gutter: 4%,
+    [
+      #code(size: 0.7em)[
+        ```cpp
+        template <class T>
+        void Queue<T>::add(const T& x){
+          QueueItem<T>* q = new QueueItem<T>(x);
+          if(is_empty()) primo = ultimo = q;
+          else {
+            ultimo->next = q;
+            ultimo = q;
+          }
+        }
+
+        template <class T>
+        T Queue<T>::remove(){
+          QueueItem<T>* q = primo;
+          T aux = q->info;
+          primo = primo->next;
+          if(!primo) ultimo = 0;
+          delete q;
+          return aux;
+        }
+        ```
+      ]
+    ],
+    [
+      - Ogni definizione esterna ripete `template <class T>` e usa `Queue<T>::`
+      - `add`: se la coda è vuota il nuovo nodo è sia `primo` sia `ultimo`, altrimenti si aggancia dopo `ultimo`
+      - `remove`: si copia `info` prima di fare `delete` del nodo
+      - Se dopo la rimozione la coda è vuota, `ultimo` va azzerato, altrimenti resta un puntatore a un nodo cancellato
+    ],
+  )
 ]
 
 // =====================================================
-// EXTRA 8: cosa stampa (iteratori)
+// EXTRA 8: cosa stampa (vector)
 // =====================================================
 #slide(title: "Extra 8: cosa stampa?")[
-  Usa la classe `Instagram` con iteratore vista nelle slide. `aggiungi_in_testa` inserisce all'inizio della lista. Un `bool` stampato con `cout` vale `0` o `1`.
-  #code(x8, size: 0.85em)
+  Ricorda che un `bool` stampato con `cout` vale `0` o `1`.
+  #code(x8, size: 0.8em)
 ]
 
 #slide(title: "Extra 8: soluzione")[
   #grid(
-    columns: (46%, 50%),
+    columns: (40%, 60%),
     column-gutter: 4%,
     [
       *Output:*
       ```text
-      30 20 10 1 1
+      4 1 4 9 24
       ```
-      Lista: 30 → 20 → 10
+      Il vector passa da `4 4 4` a `4 4 4 9 1`, poi `4 4 4 9`, infine `4 7 4 9`
     ],
     [
-      - `x[it++]`: il postfisso restituisce una *copia* con il valore precedente, quindi stampa 30 e poi `it` avanza su 20
-      - `x[it]`: stampa 20
-      - `x[++it]`: il prefisso avanza *prima*, quindi stampa 10
-      - Il `++it` successivo porta `it` a `nullptr`: `it == x.end()` vale 1
-      - `++` su un iteratore già a `nullptr` non fa nulla (c'è `if (punt)`): ancora 1
+      - `vector<int> v(3, 4)` crea 3 elementi uguali a 4
+      - `push_back(9)` e `push_back(1)` aggiungono in coda, `pop_back()` toglie l'`1`: `size()` vale 4
+      - `capacity() >= size()` è sempre vero: `1`
+      - `front()` è `4`, `back()` è `9`
+      - `++it` punta al secondo elemento, che diventa `7`
+      - La somma dei valori finali è `4 + 7 + 4 + 9 = 24`
     ],
   )
 ]
 
 // =====================================================
-// EXTRA 9: completamento (iteratori)
+// EXTRA 9: crocette (typename e STL)
 // =====================================================
-#slide(title: "Extra 9: completa")[
-  Completa gli spazi `/* 1 */` ... `/* 6 */`.
-  #code(x9, size: 0.8em)
+#slide(title: "Extra 9: crocette")[
+  #text(size: 0.8em)[
+    *1.* In un template, la riga `T::const_iterator it = c.begin();` non compila. Cosa manca?\
+    #opts(
+      [`typename` davanti a `T::const_iterator`, perché è un nome dipendente che denota un tipo],
+      [`template` prima di `T`],
+      [`static` davanti alla dichiarazione],
+    )
+    \
+    *2.* Quale di queste operazioni su un `vector` ha costo lineare?\
+    #opts(
+      [l'accesso `v[i]`],
+      [`push_back`, in costo ammortizzato],
+      [l'inserimento con `insert` in testa],
+    )
+  ]
 ]
 
 #slide(title: "Extra 9: soluzione")[
-  #grid(
-    columns: (46%, 50%),
-    column-gutter: 4%,
-    [
-      ```cpp
-      /* 1 */ punt
-      /* 2 */ *this
-      /* 3 */ iteratore
-      /* 4 */ aux
-      /* 5 */ x.begin()
-      /* 6 */ x.end()
-      ```
-    ],
-    [
-      - Prefisso: avanza e ritorna l'iteratore stesso, per *riferimento* (`*this`)
-      - Postfisso: salva una copia (`aux`), avanza riusando il prefisso e ritorna la copia *per valore*
-      - Il controllo `if(punt)` evita di leggere `nullptr->next`
-      - `x` è `const`: `begin()` e `end()` sono metodi `const`, quindi si possono chiamare
-      - Per esempio con durate 70, 50, 10 e `k = 40` il risultato è 2
-    ],
-  )
+  #text(size: 0.85em)[
+    *1 → A.* Dentro un template il compilatore assume che `T::const_iterator` sia un *valore*. Per dire che è un tipo serve `typename T::const_iterator it = c.begin();`.\ \
+    *2 → C.* Un `vector` è un array dinamico: l'accesso casuale è `O(1)`, `push_back` ha costo ammortizzato costante, ma inserire in testa obbliga a spostare tutti gli elementi, con costo `O(n)`.
+  ]
 ]
 
 // =====================================================
-// EXTRA 10: cosa stampa (tutto insieme)
+// EXTRA 10: cosa stampa (typename, vector e list)
 // =====================================================
 #slide(title: "Extra 10: cosa stampa?")[
+  #text(size: 0.8em)[
+    `list` è una lista doppiamente linkata: `push_front` e `push_back` inseriscono rispettivamente in testa e in coda.
+  ]
   #code(x10, size: 0.7em)
 ]
 
@@ -467,15 +464,87 @@ int main(){
     [
       *Output:*
       ```text
-      +G +A +B +x +x +b -Q -P -b fine -B -A -G
+      56 18 5 10
       ```
+      `l` contiene `5 8 3 10`
     ],
     [
-      - `G` è globale: costruita prima di `main`
-      - `a` costruisce `A` e `B`; `make()` costruisce due `x` con il costruttore di default (poi cambiati in `P` e `Q`)
-      - `b` viene costruita nel blocco: `+b`
-      - `delete[] p` distrugge in ordine inverso: `-Q -P`, poi esce dal blocco: `-b`
-      - `fine`, poi alla fine del `main` l'array `a` si distrugge al contrario (`-B -A`) e infine la globale (`-G`)
+      - `typename C::const_iterator` è necessario perché `C::const_iterator` è un nome dipendente
+      - `v` contiene `1 4 9 16 25 36`: i pari sono `4 + 16 + 36 = 56`
+      - `l`: `3`, poi `8` in testa, `10` in coda e `5` in testa, quindi `5 8 3 10`
+      - I pari di `l` sono `8 + 10 = 18`
+      - `l.front()` è `5` e `l.back()` è `10`
     ],
   )
+]
+
+// =====================================================
+// EXTRA 11: scrivi la funzione (typename e iteratori)
+// =====================================================
+#slide(title: "Extra 11: scrivi la funzione")[
+  Scrivi il template di funzione `conta` che, dato un contenitore STL qualsiasi e un valore, restituisce quante volte il valore compare nel contenitore. Il `main` deve funzionare con `vector<int>` e con `list<char>`.
+  #code(x11, size: 0.85em)
+]
+
+#slide(title: "Extra 11: soluzione")[
+  #grid(
+    columns: (54%, 42%),
+    column-gutter: 4%,
+    [
+      #code(size: 0.8em)[
+        ```cpp
+        template <class C, class T>
+        int conta(const C& c, const T& x){
+          int n = 0;
+          for(typename C::const_iterator it = c.begin();
+              it != c.end(); ++it)
+            if(*it == x) n++;
+          return n;
+        }
+        ```
+      ]
+    ],
+    [
+      - Due parametri di tipo: `C` (il contenitore) e `T` (il valore cercato), dedotti dagli argomenti
+      - `typename` è obbligatorio: `C::const_iterator` è un nome dipendente che denota un tipo
+      - `c` è `const`, quindi si usa `const_iterator`
+      - Si scorre l'intervallo `[begin, end)` e `end()` non va dereferenziato
+    ],
+  )
+]
+
+// =====================================================
+// EXTRA 12: domande d'esame (crocette)
+// =====================================================
+#slide(title: "Extra 12: domande d'esame")[
+  *1.* Una classe annidata (inner class):\
+    #opts(
+      [È un membro della classe che la contiene.],
+      [È automaticamente amica della classe esterna.],
+      [Non può accedere ai membri privati della classe esterna],
+      [Può essere dichiarata solo private.],
+      [Non può avere metodi statici.]
+    )\
+  *2.* Un template di classe:\
+    #opts(
+      [Può avere solo parametri di tipo.],
+      [Genera codice solo quando viene istanziato.],
+      [Viene istanziato sempre automaticamente.],
+      [È equivalente a una macro del preprocessore.]
+    )
+]
+
+#slide(title: "Extra 12: soluzione")[
+  #text(size: 0.75em)[
+    *1 → A.* Una classe annidata è un membro della classe che la contiene.
+    - B: falsa, non è `friend` della classe esterna: l'amicizia va dichiarata esplicitamente
+    - C: falsa, essendo un membro può accedere ai membri privati della classe esterna (non vale il contrario)
+    - D: falsa, può essere `public`, `protected` o `private`
+    - E: falsa, può avere membri e metodi statici
+
+    *2 → B.* Un template di classe è solo uno schema: il compilatore genera codice quando viene istanziato.
+    - A: falsa, esistono anche i parametri valore (es. `template <class T, int N>`)
+    - C: falsa, viene istanziato solo ciò che il programma usa (anche i singoli metodi, solo se usati)
+    - D: falsa, il compilatore controlla i tipi, non è una sostituzione testuale come una macro
+  ]
 ]

@@ -1,5 +1,5 @@
 #import "@preview/polylux:0.4.0": *
-#import "./../../unipd.typ": *
+#import "./../unipd.typ": *
 #show: unipd-theme.with(palette: (..unipd-palette, font: "Noto Sans"))
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
