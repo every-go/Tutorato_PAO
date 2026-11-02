@@ -381,7 +381,7 @@
   + Inserimento e rimozione in coda a tempo costante ammortizzato
   + Inserimento e rimozione in coda a tempo lineare ammortizzato
   + La capacità può variare dinamicamente (potenza di 2)
-  + La gestione della memoria è automaticamente
+  + La gestione della memoria è automatica
   La capacità raddoppia ogni volta che c'è bisogno di una cella oltre capacity().
 ]
 
@@ -412,7 +412,9 @@
   ```
   Ad ogni classe contenitore si ha
   - C::iterator
+   - permette di iterare sul contenitore e modificare gli elementi puntati
   - C::const\_iterator
+   - permette di iterare sul contenitore ma *non* di modificare gli elementi puntati (da non confondere con const const\_iterator che non permette né di iterare né di modificare gli elementi puntati)
 ]
 
 #slide(title: "Iteratori")[
@@ -438,5 +440,4 @@
   Esistono altri contenitori come:
   - list (lista doppiamente linkata)
   - deque (coda con accessi sia dal "fronte" che dal "retro")
-  -
 ]

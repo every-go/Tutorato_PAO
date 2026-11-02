@@ -346,15 +346,14 @@ int main(){
 // =====================================================
 #slide(title: "Extra 7: scrivi i metodi")[
   #text(size: 0.8em)[
-    Scrivi le definizioni *esterne* di `Queue<T>::add` e `Queue<T>::remove`. Puoi assumere che `remove` venga chiamata solo su una coda non vuota, e ignora il distruttore.
+    Scrivi le definizioni *esterne* di `void Queue<T>::add` e `void Queue<T>::remove`.
   ]
   #code(x7, size: 0.65em)
 ]
 
 #slide(title: "Extra 7: soluzione")[
   #grid(
-    columns: (54%, 42%),
-    column-gutter: 4%,
+    columns: (50%, 50%),
     [
       #code(size: 0.7em)[
         ```cpp
@@ -369,13 +368,13 @@ int main(){
         }
 
         template <class T>
-        T Queue<T>::remove(){
+        void Queue<T>::remove(){
+          if(!primo)
+            return;
           QueueItem<T>* q = primo;
-          T aux = q->info;
           primo = primo->next;
           if(!primo) ultimo = 0;
           delete q;
-          return aux;
         }
         ```
       ]
@@ -383,7 +382,6 @@ int main(){
     [
       - Ogni definizione esterna ripete `template <class T>` e usa `Queue<T>::`
       - `add`: se la coda è vuota il nuovo nodo è sia `primo` sia `ultimo`, altrimenti si aggancia dopo `ultimo`
-      - `remove`: si copia `info` prima di fare `delete` del nodo
       - Se dopo la rimozione la coda è vuota, `ultimo` va azzerato, altrimenti resta un puntatore a un nodo cancellato
     ],
   )
@@ -393,7 +391,6 @@ int main(){
 // EXTRA 8: cosa stampa (vector)
 // =====================================================
 #slide(title: "Extra 8: cosa stampa?")[
-  Ricorda che un `bool` stampato con `cout` vale `0` o `1`.
   #code(x8, size: 0.8em)
 ]
 
@@ -496,8 +493,7 @@ int main(){
         template <class C, class T>
         int conta(const C& c, const T& x){
           int n = 0;
-          for(typename C::const_iterator it = c.begin();
-              it != c.end(); ++it)
+          for(typename C::const_iterator it = c.begin(); it != c.end(); ++it)
             if(*it == x) n++;
           return n;
         }
