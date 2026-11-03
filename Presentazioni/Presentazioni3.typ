@@ -378,7 +378,6 @@
   Restituisce array dinamico con capacity()$>=$size().\
   È il più semplice contenitore e per la maggioranza delle applicazioni è il più efficiente.
   + Supporto accesso casuale O(1)
-  + Inserimento e rimozione in coda a tempo costante ammortizzato
   + Inserimento e rimozione in coda a tempo lineare ammortizzato
   + La capacità può variare dinamicamente (potenza di 2)
   + La gestione della memoria è automatica
