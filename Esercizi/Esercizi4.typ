@@ -477,7 +477,7 @@ int main(){
 // =====================================================
 #slide(title: "Extra 9: scrivi il metodo")[
   #text(size: 0.75em)[
-    Nella stessa classe dell'Extra 8 aggiungi `void reverse();`. Scrivine la definizione *esterna*: inverte la lista *in loco*, senza creare né cancellare nodi (si possono solo cambiare i puntatori).
+    Nella stessa classe dell'Extra 8 aggiungi `void reverse();`. Scrivine la definizione: inverte la lista *in loco*, senza creare né cancellare nodi (si possono solo cambiare i puntatori).
   ]
   #code(x10, size: 0.7em)
 ]
