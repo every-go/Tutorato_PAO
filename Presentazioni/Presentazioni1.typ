@@ -369,7 +369,3 @@
   4. `t3 = t1;` -> `Assign` (assegnazione tra oggetti già esistenti).
   5. `g(t1);` -> `Copy` (passaggio di parametro per valore).
 ]
-
-#filled-slide[
-  Grazie per l'attenzione!
-]
