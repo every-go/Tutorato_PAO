@@ -258,7 +258,6 @@
       *Vogliamo lo stesso con l'iteratore*
 
       ```cpp
-      auto it = l.begin();
       (*it).x;    // operator*
       it->x;      // operator->
       ```
