@@ -69,7 +69,6 @@
 ]
 
 #slide(title: "Problematica")[
-  Uno degli aspetti ironici della programmazione ad oggetti di C++ è che occorre usare puntatori e riferimenti e non oggetti.\
   Esempio:
   ```cpp
   class B{
