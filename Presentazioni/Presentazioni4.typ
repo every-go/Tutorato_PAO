@@ -20,7 +20,7 @@
 #title-slide(
   authors: "Matteo Mazzaretto",
   title: "Tutorato 4",
-  date: "10 Novembre 2026",
+  date: "10 novembre 2026",
 )
 
 #slide(title: "L'esercizio: dList<T>")[

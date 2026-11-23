@@ -6,7 +6,7 @@
 #title-slide(
   authors: "Matteo Mazzaretto",
   title: "Tutorato 1 - Esercizi Extra",
-  date: "20 Ottobre 2026",
+  date: "20 ottobre 2026",
 )
 
 // --- EXTRA 1: cosa stampa ---

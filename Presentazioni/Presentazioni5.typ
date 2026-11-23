@@ -12,7 +12,7 @@
 #title-slide(
   authors: "Matteo Mazzaretto",
   title: "Tutorato 5",
-  date: "17 Novembre 2026",
+  date: "17 novembre 2026",
 )
 
 #filled-slide()[

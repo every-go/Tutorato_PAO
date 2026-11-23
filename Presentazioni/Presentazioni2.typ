@@ -13,7 +13,7 @@
 #title-slide(
   authors: "Matteo Mazzaretto",
   title: "Tutorato 2",
-  date: "27 Ottobre 2026",
+  date: "27 ottobre 2026",
 )
 
 #slide(title: "Distruzioni oggetti")[

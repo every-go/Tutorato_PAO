@@ -5,7 +5,7 @@
 #title-slide(
   authors: "Matteo Mazzaretto",
   title: "Tutorato 3 - Esercizi Extra",
-  date: "03 Novembre 2026",
+  date: "03 novembre 2026",
 )
 
 // Blocco di codice allineato a sinistra e con dimensione ridotta
