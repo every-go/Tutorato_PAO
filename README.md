@@ -17,9 +17,9 @@ https://t.me/joinchat/ARA4LUOb23OjGAeyqCyvWg
 |  10 novembre | 10:30-12:30 |   2AB40  |
 |  17 novembre | 10:30-12:30 |   2AB40  |
 |  24 novembre | 10:30-12:30 |   2AB40  |
-|  01 Dicembre | 10:30-12:30 |   2AB40  |
-|  15 Dicembre | 10:30-12:30 |   1BC45  |
-|  12 Gennaio  | 10:30-12:30 |   2AB40  |
+|  01 dicembre | 10:30-12:30 |   2AB40  |
+|  15 dicembre | 10:30-12:30 |   1BC45  |
+|  12 gennaio  | 10:30-12:30 |   2AB40  |
 
 ## Materiale di riferimento per altri esercizi
 
